@@ -8,11 +8,19 @@ public class Guard : MonoBehaviour
 {
     [SerializeField] private Transform pathHolder;
 
+    [SerializeField] private Light spotlight;
+
     [SerializeField] private float speed = 5f;
     [SerializeField] private float waitTime = 0.3f;
-    
+    [SerializeField] private float turnSpeed = 90f;
+    [SerializeField] private float viewDistance;
+
+    private float viewAngle;
+
     void Start()
     {
+        viewAngle = spotlight.spotAngle;
+        
         Vector3[] waypoints = new Vector3[pathHolder.childCount];
 
         for (int i = 0; i < waypoints.Length; i++)
@@ -30,6 +38,8 @@ public class Guard : MonoBehaviour
 
         int targetWaypointIndex = 1;
         Vector3 targetWaypoint = waypoints[targetWaypointIndex];
+        
+        transform.LookAt(targetWaypoint);
 
         while (true)
         {
@@ -41,7 +51,25 @@ public class Guard : MonoBehaviour
                 targetWaypoint = waypoints[targetWaypointIndex];
                 
                 yield return new WaitForSeconds(waitTime);
+
+                yield return StartCoroutine(TurnToFace(targetWaypoint));
             }
+
+            yield return null;
+        }
+    }
+
+    IEnumerator TurnToFace(Vector3 lookTarget)
+    {
+        Vector3 dirToLookTarget = (lookTarget - transform.position).normalized;
+
+        float targetAngle = 90 - Mathf.Atan2(dirToLookTarget.z, dirToLookTarget.x) * Mathf.Rad2Deg;
+
+        while (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetAngle)) > 0.05f)
+        {
+            float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, turnSpeed * Time.deltaTime);
+
+            transform.eulerAngles = Vector3.up * angle;
 
             yield return null;
         }
@@ -60,5 +88,8 @@ public class Guard : MonoBehaviour
         }
         
         Gizmos.DrawLine(previousPosition, startPosition);
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, transform.forward * viewDistance);
     }
 }
