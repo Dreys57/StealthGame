@@ -8,6 +8,8 @@ public class Guard : MonoBehaviour
 {
     [SerializeField] private Transform pathHolder;
 
+    [SerializeField] private LayerMask viewMask;
+
     [SerializeField] private Light spotlight;
 
     [SerializeField] private float speed = 5f;
@@ -15,11 +17,19 @@ public class Guard : MonoBehaviour
     [SerializeField] private float turnSpeed = 90f;
     [SerializeField] private float viewDistance;
 
+    private Transform player;
+
+    private Color originalSpotlightColor;
+
     private float viewAngle;
 
     void Start()
     {
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+        
         viewAngle = spotlight.spotAngle;
+
+        originalSpotlightColor = spotlight.color;
         
         Vector3[] waypoints = new Vector3[pathHolder.childCount];
 
@@ -30,6 +40,38 @@ public class Guard : MonoBehaviour
         }
 
         StartCoroutine(FollowPath(waypoints));
+    }
+
+    private void Update()
+    {
+        if (CanSeePlayer())
+        {
+            spotlight.color = Color.red;
+        }
+        else
+        {
+            spotlight.color = originalSpotlightColor;
+        }
+    }
+
+    bool CanSeePlayer()
+    {
+        if (Vector3.Distance(transform.position, player.position) < viewDistance)
+        {
+            Vector3 dirToPlayer = (player.position - transform.position).normalized;
+
+            float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
+
+            if (angleBetweenGuardAndPlayer < viewAngle / 2f)
+            {
+                if (!Physics.Linecast(transform.position, player.position, viewMask))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     IEnumerator FollowPath(Vector3[] waypoints)
