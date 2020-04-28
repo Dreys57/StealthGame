@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,11 +16,24 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float groundDistance = 0.4f;
     [SerializeField] private float limitFallVelocity = -2f;
     [SerializeField] private float jumpHeight = 3f;
+    [SerializeField] private float crouchHeight = 0.5f;
+    [SerializeField] private float crouchSpeed = 6f;
+    
+    private float originalHeight;
+    private float originalSpeed;
 
     private Vector3 velocity;
 
     private bool isGrounded;
-    
+    private bool isCrouching = false;
+
+    private void Start()
+    {
+        originalHeight = controller.height;
+
+        originalSpeed = speed;
+    }
+
     void Update()
     {
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
@@ -44,5 +58,28 @@ public class PlayerMovement : MonoBehaviour
         velocity.y += gravity * Time.deltaTime;
 
         controller.Move(velocity * Time.deltaTime);
+        
+        if (Input.GetButtonDown("Crouch"))
+        {
+            isCrouching = !isCrouching;
+            
+            CheckCrouch();
+        }
+    }
+    
+    void CheckCrouch()
+    {
+        if (isCrouching)
+        {
+            controller.height = crouchHeight;
+
+            speed = crouchSpeed;
+        }
+        else
+        {
+            controller.height = originalHeight;
+
+            speed = originalSpeed;
+        }
     }
 }
