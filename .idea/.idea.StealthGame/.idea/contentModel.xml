@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\fawde\.Rider2018.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\fawde\.Rider2018.3\system\resharper-host\local\Transient\ReSharperHost\v183\SolutionCaches\_StealthGame.2147163457.00" t="ExcludeRecursive" />
-    <e p="D:\Development\SAE\919\StealthGame" t="IncludeRecursive">
+    <e p="C:\Users\vdwor_000\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\vdwor_000\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_StealthGame.-1480189530.00" t="ExcludeRecursive" />
+    <e p="D:\Users\vdwor_000\Documents\SAE\StealthGame\Stealth\StealthGame" t="IncludeRecursive">
       <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="Guard.cs" t="Include" />
+          <e p="LevelGenerator.cs" t="Include" />
           <e p="MouseLook.cs" t="Include" />
           <e p="ObjectPickUP.cs" t="Include" />
           <e p="PlayerMovement.cs" t="Include" />
@@ -23,13 +24,10 @@
           </e>
         </e>
       </e>
-      <e p="Library" t="ExcludeRecursive" />
       <e p="obj" t="ExcludeRecursive" />
       <e p="Packages" t="ExcludeRecursive" />
       <e p="StealthGame.sln" t="IncludeFlat" />
-      <e p="Temp" t="ExcludeRecursive">
-        <e p="bin" t="ExcludeRecursive" />
-      </e>
+      <e p="Temp\bin" t="ExcludeRecursive" />
     </e>
   </component>
 </project>
