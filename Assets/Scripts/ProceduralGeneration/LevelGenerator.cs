@@ -20,6 +20,12 @@ public class LevelGenerator
 
         allSpaceNodes = bsp.PrepareNodesCollection(maxIterations, roomWidthMin, roomLengthMin);
 
-        return new List<Node>(allSpaceNodes);
+        List<Node> roomSpaces = StructureHelper.TraverseGraphToExtractLowestLeaf(bsp.RootNode);
+        
+        RoomGenerator roomGenerator = new RoomGenerator(maxIterations, roomLengthMin, roomWidthMin);
+
+        List<RoomNode> roomList = roomGenerator.GenerateRoomInGivenSpace(roomSpaces);
+
+        return new List<Node>(roomList);
     }
 }
