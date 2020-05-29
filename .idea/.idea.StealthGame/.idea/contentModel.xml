@@ -17,6 +17,8 @@
           </e>
           <e p="ProceduralGeneration" t="Include">
             <e p="BinarySpacePartitioner.cs" t="Include" />
+            <e p="CorridorGenerator.cs" t="Include" />
+            <e p="CorridorNode.cs" t="Include" />
             <e p="LevelCreator.cs" t="Include" />
             <e p="LevelGenerator.cs" t="Include" />
             <e p="Line.cs" t="Include" />

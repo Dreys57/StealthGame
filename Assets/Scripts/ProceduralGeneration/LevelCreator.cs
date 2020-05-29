@@ -23,7 +23,7 @@ public class LevelCreator : MonoBehaviour
     {
         LevelGenerator generator = new LevelGenerator(levelWidth, levelLength);
 
-        var listOfRooms = generator.CalculateRooms(maxIterations, roomWidthMin, roomLengthMin);
+        var listOfRooms = generator.CalculateLevel(maxIterations, roomWidthMin, roomLengthMin, corridorWidth);
 
         for (int i = 0; i < listOfRooms.Count; i++)
         {

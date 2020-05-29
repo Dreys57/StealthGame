@@ -246,7 +246,7 @@ MonoBehaviour:
   levelLength: 100
   roomWidthMin: 25
   roomLengthMin: 25
-  maxIterations: 10
+  maxIterations: 50
   corridorWidth: 5
   material: {fileID: 2100000, guid: 7e181fd161a9d4c41a7d09c87806d01d, type: 2}
 --- !u!4 &979159418

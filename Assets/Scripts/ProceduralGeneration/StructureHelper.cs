@@ -4,7 +4,7 @@ using UnityEngine;
 
 public static class StructureHelper
 {
-    public static List<Node> TraverseGraphToExtractLowestLeaf(RoomNode parentNode)
+    public static List<Node> TraverseGraphToExtractLowestLeaf(Node parentNode)
     {
         Queue<Node> nodesToCheck = new Queue<Node>();
         
@@ -59,4 +59,20 @@ public static class StructureHelper
         
         return new Vector2Int(Random.Range((int) (minX + (maxX - minX) * pointModifier), maxX), Random.Range((int)(minY+ (maxY - minY) * pointModifier), maxY));
     }
+
+    public static Vector2Int CalculateCenter(Vector2Int v1, Vector2Int v2)
+    {
+        Vector2 sum = v1 + v2;
+        Vector2 vectorTemp = sum / 2;
+        
+        return new Vector2Int((int) vectorTemp.x, (int) vectorTemp.y);
+    }
+}
+
+public enum RelativePosition
+{
+    UP,
+    DOWN,
+    RIGHT,
+    LEFT
 }
