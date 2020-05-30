@@ -211,7 +211,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &979159416
 GameObject:
@@ -246,9 +246,14 @@ MonoBehaviour:
   levelLength: 100
   roomWidthMin: 25
   roomLengthMin: 25
-  maxIterations: 50
+  maxIterations: 20
   corridorWidth: 5
+  offset: 1
+  bottomLeftPointModifier: 0.1
+  topRightPointModifier: 0.9
   material: {fileID: 2100000, guid: 7e181fd161a9d4c41a7d09c87806d01d, type: 2}
+  wallPrefab: {fileID: 3316389892131665157, guid: d546e7585287f0f43ae8a3883107942b,
+    type: 3}
 --- !u!4 &979159418
 Transform:
   m_ObjectHideFlags: 0
@@ -261,7 +266,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2012240996
 GameObject:

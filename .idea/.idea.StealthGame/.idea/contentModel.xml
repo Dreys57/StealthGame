@@ -8,7 +8,6 @@
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
-          <e p="BSP.cs" t="Include" />
           <e p="Guard.cs" t="Include" />
           <e p="ObjectPickUP.cs" t="Include" />
           <e p="Player" t="Include">
@@ -16,16 +15,20 @@
             <e p="PlayerMovement.cs" t="Include" />
           </e>
           <e p="ProceduralGeneration" t="Include">
-            <e p="BinarySpacePartitioner.cs" t="Include" />
-            <e p="CorridorGenerator.cs" t="Include" />
-            <e p="CorridorNode.cs" t="Include" />
-            <e p="LevelCreator.cs" t="Include" />
-            <e p="LevelGenerator.cs" t="Include" />
-            <e p="Line.cs" t="Include" />
-            <e p="Node.cs" t="Include" />
-            <e p="RoomGenerator.cs" t="Include" />
-            <e p="RoomNode.cs" t="Include" />
-            <e p="StructureHelper.cs" t="Include" />
+            <e p="Generators" t="Include">
+              <e p="CorridorGenerator.cs" t="Include" />
+              <e p="LevelCreator.cs" t="Include" />
+              <e p="LevelGenerator.cs" t="Include" />
+              <e p="RoomGenerator.cs" t="Include" />
+            </e>
+            <e p="StructuringScripts" t="Include">
+              <e p="BinarySpacePartitioner.cs" t="Include" />
+              <e p="CorridorNode.cs" t="Include" />
+              <e p="Line.cs" t="Include" />
+              <e p="Node.cs" t="Include" />
+              <e p="RoomNode.cs" t="Include" />
+              <e p="StructureHelper.cs" t="Include" />
+            </e>
           </e>
           <e p="SimpleCameraController.cs" t="Include" />
         </e>
