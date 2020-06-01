@@ -94,7 +94,7 @@ public class BinarySpacePartitioner
         return new Line(orientation, GetCoordinatesForOrientation(orientation, bottomLeftAreaCorner, topRightAreaCorner, roomWidthMin, roomLengthMin));
     }
     
-    //get coordinates for the line, keeping it inside the room's size
+    //Get coordinates for the line, keeping it inside the room's size
     private Vector2Int GetCoordinatesForOrientation(Orientation orientation, Vector2Int bottomLeftAreaCorner, Vector2Int topRightAreaCorner, int roomWidthMin, int roomLengthMin)
     {
         Vector2Int coordinates = Vector2Int.zero;

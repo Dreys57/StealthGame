@@ -13,6 +13,8 @@ public class CorridorNode : Node
     private int corridorWidth;
     private int wallDistanceModifier = 1;
 
+    private int checkValue = -1;
+
     public CorridorNode(Node structure1, Node structure2, int corridorWidth) : base(null) //base(null) so that corridors won't connect to each other 
     {
         this.structure1 = structure1;
@@ -80,7 +82,7 @@ public class CorridorNode : Node
 
         List<Node> rightStructurePossibleNeighbors = rightStructureChildren.Where(child =>
             GetYForNeighbor(leftStructure.TopRightAreaCorner, leftStructure.BottomRightAreaCorner,
-                child.TopLeftAreaCorner, child.BottomLeftAreaCorner) != -1).OrderByDescending(child => child.BottomRightAreaCorner.x).ToList();
+                child.TopLeftAreaCorner, child.BottomLeftAreaCorner) != -1).OrderBy(child => child.BottomRightAreaCorner.x).ToList();
 
         if (rightStructurePossibleNeighbors.Count <= 0)
         {
@@ -94,7 +96,7 @@ public class CorridorNode : Node
         int y = GetYForNeighbor(leftStructure.TopLeftAreaCorner, leftStructure.BottomRightAreaCorner,
             rightStructure.TopLeftAreaCorner, rightStructure.BottomLeftAreaCorner);
 
-        while (y == -1 && sortedLeftStructure.Count > 1)
+        while (y == checkValue && sortedLeftStructure.Count > 1)
         {
             sortedLeftStructure = sortedLeftStructure.Where(child => child.TopLeftAreaCorner.y != leftStructure.TopLeftAreaCorner.y).ToList();
 
@@ -134,7 +136,7 @@ public class CorridorNode : Node
                 rightNodeUp - new Vector2Int(0, wallDistanceModifier + this.corridorWidth)).y;
         }
 
-        return -1;
+        return checkValue;
     }
 
     private void ProcessRoomRelationUpOrDown(Node structure1, Node structure2)
@@ -164,7 +166,7 @@ public class CorridorNode : Node
 
         List<Node> topStructurePossibleNeighbors = structureTopChildren
             .Where(child => GetXForNeighbor(bottomStructure.TopLeftAreaCorner, bottomStructure.TopRightAreaCorner,
-                child.BottomLeftAreaCorner, child.BottomRightAreaCorner) != 1).OrderByDescending(child => child.BottomRightAreaCorner.y).ToList();
+                child.BottomLeftAreaCorner, child.BottomRightAreaCorner) != 1).OrderBy(child => child.BottomRightAreaCorner.y).ToList();
 
         if (topStructurePossibleNeighbors.Count == 0)
         {
@@ -177,7 +179,7 @@ public class CorridorNode : Node
 
         int x = GetXForNeighbor(bottomStructure.TopLeftAreaCorner, bottomStructure.TopRightAreaCorner, topStructure.BottomLeftAreaCorner, topStructure.BottomRightAreaCorner);
 
-        while (x == 1 && sortedBottomStructure.Count > 1)
+        while (x == checkValue && sortedBottomStructure.Count > 1)
         {
             sortedBottomStructure = sortedBottomStructure.Where(child => child.TopLeftAreaCorner.x != topStructure.TopLeftAreaCorner.x).ToList();
 
@@ -212,7 +214,7 @@ public class CorridorNode : Node
             return StructureHelper.CalculateCenter(topNodeLeft + new Vector2Int(wallDistanceModifier, 0), bottomNodeRight - new Vector2Int(this.corridorWidth + wallDistanceModifier, 0)).x;
         }
 
-        return -1;
+        return checkValue;
     }
 
     private RelativePosition CheckPositionBetweenTwoStructures()

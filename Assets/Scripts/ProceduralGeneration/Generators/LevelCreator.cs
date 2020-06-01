@@ -72,6 +72,7 @@ public class LevelCreator : MonoBehaviour
 
     private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner)
     {
+        //Vertices for the mesh
         Vector3 bottomLeftVertice = new Vector3(bottomLeftCorner.x, 0, bottomLeftCorner.y);
         Vector3 bottomRightVertice = new Vector3(topRightCorner.x, 0, bottomLeftCorner.y);
         Vector3 topLeftVertice = new Vector3(bottomLeftCorner.x, 0, topRightCorner.y);
@@ -85,6 +86,7 @@ public class LevelCreator : MonoBehaviour
             bottomRightVertice
         };
         
+        //Uvs
         Vector2[]uvs = new Vector2[vertices.Length];
 
         for (int i = 0; i < uvs.Length; i++)
@@ -92,6 +94,7 @@ public class LevelCreator : MonoBehaviour
             uvs[i] = new Vector2(vertices[i].x, vertices[i].z);
         }
         
+        //Triangles
         int[] triangles = new int[]
         {
             0,
@@ -114,7 +117,10 @@ public class LevelCreator : MonoBehaviour
         levelFloor.transform.localScale = Vector3.one;
         levelFloor.GetComponent<MeshFilter>().mesh = mesh;
         levelFloor.GetComponent<MeshRenderer>().material = material;
-
+        
+        //Positionning the walls
+        
+        //On the X axis
         for (int row = (int) bottomLeftVertice.x ; row < (int) bottomRightVertice.x; row++)
         {
             Vector3 wallPosition = new Vector3(row, 0, bottomLeftVertice.z);
@@ -128,7 +134,8 @@ public class LevelCreator : MonoBehaviour
             
             AddWallPositionToList(wallPosition, horizontalWallPossiblePositions, horizontalDoorPossiblePositions);
         }
-
+        
+        //On the Z axis
         for (int columns = (int) bottomLeftVertice.z; columns < (int) topLeftVertice.z; columns++)
         {
             Vector3 wallPosition = new Vector3(bottomLeftVertice.x, 0, columns);

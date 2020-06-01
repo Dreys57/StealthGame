@@ -242,12 +242,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc1d7a2f3f28dd34e96e344a16d259c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelWidth: 100
-  levelLength: 100
-  roomWidthMin: 25
-  roomLengthMin: 25
-  maxIterations: 20
-  corridorWidth: 5
+  levelWidth: 50
+  levelLength: 50
+  roomWidthMin: 10
+  roomLengthMin: 10
+  maxIterations: 10
+  corridorWidth: 2
   offset: 1
   bottomLeftPointModifier: 0.1
   topRightPointModifier: 0.9

@@ -15,14 +15,14 @@ public static class StructureHelper
             return  new List<Node>(){ parentNode };
         }
 
-        foreach (var child in parentNode.ChildrenNodeList)
+        foreach (Node child in parentNode.ChildrenNodeList)
         {
             nodesToCheck.Enqueue(child);
         }
 
         while (nodesToCheck.Count > 0)
         {
-            var currentNode = nodesToCheck.Dequeue();
+            Node currentNode = nodesToCheck.Dequeue();
 
             if (currentNode.ChildrenNodeList.Count == 0)
             {
@@ -30,7 +30,7 @@ public static class StructureHelper
             }
             else
             {
-                foreach (var child in currentNode.ChildrenNodeList)
+                foreach (Node child in currentNode.ChildrenNodeList)
                 {
                     nodesToCheck.Enqueue(child);
                 }
