@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UI;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class GuardStateMachine : MonoBehaviour
+public class Unit : MonoBehaviour
 {
+
     public enum State
     {
         IDLE,
@@ -13,30 +15,28 @@ public class GuardStateMachine : MonoBehaviour
         CHASE,
         SEARCH
     }
-    
-    [SerializeField] private float speed = 5f;
-
-    private Pathfinding pathfinding;
-
-    private Grid grid;
 
     private State state = State.IDLE;
 
     private Vector3 target;
 
+    [SerializeField] private float speed = 5f;
+
+    private Vector3[] path;
+
+    private int targetIndex;
+
+    private Grid grid;
+
     private bool playerHeard;
     private bool playerSeen;
 
-    void Start()
+    private void Start()
     {
-        pathfinding = FindObjectOfType<Pathfinding>();
-
         grid = FindObjectOfType<Grid>();
-        
-        //pathfinding.Seeker = transform;
     }
-    
-    void Update()
+
+    private void Update()
     {
         float minX = -(grid.GridWorldSize.x / 2);
         float maxX = grid.GridWorldSize.x / 2;
@@ -49,10 +49,8 @@ public class GuardStateMachine : MonoBehaviour
                 
                 target = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minY, maxY));
 
-                //pathfinding.Target = target;
-                
                 state = State.PATROL;
-
+                
                 break;
             case State.PATROL:
 
@@ -65,14 +63,10 @@ public class GuardStateMachine : MonoBehaviour
                     if (Vector3.Distance(transform.position,target) < 0.1f)
                     {
                         target = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minY, maxY));
-                        //pathfinding.Target = target;
                     }
-                    else
-                    {
-                        
-                    }
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
                 }
-                
                 break;
             case State.CHASE:
                 break;
@@ -81,24 +75,39 @@ public class GuardStateMachine : MonoBehaviour
         }
     }
 
-    private void FollowPath(List<PathfindingNode> path)
+    public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
     {
-        int targetWaypointIndex = 1;
-        
-        Vector3 targetWaypoint = path[targetWaypointIndex].WorldPosition;
-        
-        transform.LookAt(targetWaypoint);
-
-        while (path.Count > 0)
+        if (pathSuccessful)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetWaypoint, speed * Time.deltaTime);
+            path = newPath;
+            
+            StopCoroutine(FollowPath());
+            StartCoroutine(FollowPath());
 
-            if (transform.position == targetWaypoint)
+        }
+    }
+
+    IEnumerator FollowPath()
+    {
+        Vector3 currentWaypoint = path[0];
+
+        while (true)
+        {
+            if (transform.position == currentWaypoint)
             {
-                targetWaypointIndex = (targetWaypointIndex + 1) % path.Count;
+                targetIndex++;
 
-                targetWaypoint = path[targetWaypointIndex].WorldPosition;
+                if (targetIndex >= path.Length)
+                {
+                    yield break;
+                }
+
+                currentWaypoint = path[targetIndex];
             }
+
+            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
+
+            yield return null;
         }
     }
 }

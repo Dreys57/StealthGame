@@ -23,21 +23,12 @@ public class Grid : MonoBehaviour
     
     private PathfindingNode[,] grid;
 
-    private List<PathfindingNode> path;
-
     private float nodeDiameter;
     
     private int gridSizeX;
     private int gridSizeY;
-    
-    public List<PathfindingNode> Path
-    {
-        get => path;
-        set => path = value;
-    }
-    
 
-    private void Start()
+    private void Awake()
     {
         nodeDiameter = nodeRadius * 2;
 
@@ -120,14 +111,6 @@ public class Grid : MonoBehaviour
             foreach (PathfindingNode node in grid)
             {
                 Gizmos.color = (node.Walkable) ? Color.white : Color.red;
-
-                if (path!= null)
-                {
-                    if (path.Contains(node))
-                    {
-                        Gizmos.color = Color.black;
-                    }
-                }
 
                 Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - 0.1f));
             }

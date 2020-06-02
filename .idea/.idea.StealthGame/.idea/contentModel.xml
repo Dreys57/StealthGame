@@ -14,6 +14,8 @@
             <e p="Heap.cs" t="Include" />
             <e p="Pathfinding.cs" t="Include" />
             <e p="PathfindingNode.cs" t="Include" />
+            <e p="PathRequestManager.cs" t="Include" />
+            <e p="Unit.cs" t="Include" />
           </e>
           <e p="Guard.cs" t="Include" />
           <e p="ObjectPickUP.cs" t="Include" />
