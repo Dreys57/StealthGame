@@ -8,7 +8,16 @@ public class Grid : MonoBehaviour
 {
     [SerializeField] private Vector2 gridWorldSize;
 
+    public Vector2 GridWorldSize => gridWorldSize;
+
     [SerializeField] private float nodeRadius;
+
+    private int maxSize;
+
+    public int MaxSize
+    {
+        get { return gridSizeX * gridSizeY; }
+    }
 
     [SerializeField] private LayerMask obstacleMask;
     
@@ -112,7 +121,7 @@ public class Grid : MonoBehaviour
             {
                 Gizmos.color = (node.Walkable) ? Color.white : Color.red;
 
-                if (path != null)
+                if (path!= null)
                 {
                     if (path.Contains(node))
                     {

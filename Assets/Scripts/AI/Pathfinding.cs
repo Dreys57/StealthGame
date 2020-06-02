@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class Pathfinding : MonoBehaviour
@@ -9,6 +10,18 @@ public class Pathfinding : MonoBehaviour
     [SerializeField] private Transform target;
     
     private Grid grid;
+    
+    /*public Transform Seeker
+    {
+        get => seeker;
+        set => seeker = value;
+    }*/
+
+    /*public Vector3 Target
+    {
+        get => target;
+        set => target = value;
+    }*/
 
     private void Awake()
     {
@@ -17,36 +30,36 @@ public class Pathfinding : MonoBehaviour
 
     private void Update()
     {
-        FindPath(seeker.position, target.position);
+        if (Input.GetButtonDown("Jump"))
+        {
+            FindPath(seeker.position, target.position);
+        }
+        
     }
 
     void FindPath(Vector3 startPos, Vector3 targetPos)
     {
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        
         PathfindingNode startNode = grid.NodeFromWorldPoint(startPos);
         PathfindingNode targetNode = grid.NodeFromWorldPoint(targetPos);
         
-        List<PathfindingNode> openList = new List<PathfindingNode>();
+        Heap<PathfindingNode> openList = new Heap<PathfindingNode>(grid.MaxSize);
         List<PathfindingNode> closedList = new List<PathfindingNode>();
         
         openList.Add(startNode);
 
         while (openList.Count > 0)
         {
-            PathfindingNode currentNode = openList[0];
-
-            for (int i = 1; i < openList.Count; i++)
-            {
-                if (openList[i].FCost < currentNode.FCost || (openList[i].FCost == currentNode.FCost && openList[i].HCost < currentNode.HCost))
-                {
-                    currentNode = openList[i];
-                }
-            }
-
-            openList.Remove(currentNode);
+            PathfindingNode currentNode = openList.RemoveFirst();
+            
             closedList.Add(currentNode);
 
             if (currentNode == targetNode)
             {
+                sw.Stop();
+                print("Path found:" + sw.ElapsedMilliseconds + " ms");
                 RetracePath(startNode, targetNode);
                 return;
             }

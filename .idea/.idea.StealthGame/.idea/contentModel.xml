@@ -10,6 +10,8 @@
         <e p="Scripts" t="Include">
           <e p="AI" t="Include">
             <e p="Grid.cs" t="Include" />
+            <e p="GuardStateMachine.cs" t="Include" />
+            <e p="Heap.cs" t="Include" />
             <e p="Pathfinding.cs" t="Include" />
             <e p="PathfindingNode.cs" t="Include" />
           </e>
