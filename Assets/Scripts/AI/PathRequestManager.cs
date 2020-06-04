@@ -61,9 +61,7 @@ public class PathRequestManager : MonoBehaviour
     public void FinishedProcessingPath(Vector3[] path, bool sucess)
     {
         currentPathRequest.callback(path, sucess);
-        
-        Debug.Log("ici");
-        
+
         isPorcessingPath = false;
         
         TryProcessNext();

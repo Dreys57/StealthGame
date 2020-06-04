@@ -1536,6 +1536,7 @@ GameObject:
   - component: {fileID: 1163178016}
   - component: {fileID: 1163178019}
   - component: {fileID: 1163178015}
+  - component: {fileID: 1163178020}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Untagged
@@ -1631,7 +1632,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5061cd984ce902241956ff7d70418e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  viewMask:
+    serializedVersion: 2
+    m_Bits: 512
   speed: 5
+  viewDistance: 20
+--- !u!135 &1163178020
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1163178014}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1273488993
 GameObject:
   m_ObjectHideFlags: 0

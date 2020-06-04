@@ -20,14 +20,23 @@ public class Unit : MonoBehaviour
 
     private Vector3 target;
     private Vector3 startPos;
-
+    
+    [SerializeField] private LayerMask viewMask;
+    
     [SerializeField] private float speed = 5f;
+    [SerializeField] private float viewDistance;
 
     private Vector3[] path;
 
     private int targetIndex;
+    
+    private float viewAngle;
 
     private Grid grid;
+
+    private Transform player;
+
+    private Light spotlight;
 
     private bool playerHeard;
     private bool playerSeen;
@@ -40,6 +49,10 @@ public class Unit : MonoBehaviour
         startPos = new Vector3(transform.position.x, 2f, transform.position.z);
         
         path = new Vector3[0];
+        
+        player = GameObject.FindGameObjectWithTag("Player").transform;
+
+        spotlight = GetComponentInChildren<Light>();
     }
 
     private void Update()
@@ -54,7 +67,6 @@ public class Unit : MonoBehaviour
             case State.IDLE:
                 
                 target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
-                Debug.Log("idle" + target + startPos);
                 PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
                 state = State.PATROL;
@@ -62,21 +74,33 @@ public class Unit : MonoBehaviour
                 break;
             case State.PATROL:
 
+                playerSeen = CanSeePlayer();
+
                 if (playerHeard)
                 {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+                    
                     state = State.SEARCH;
                 }
-                else
+                
+                if(playerSeen)
                 {
-                    if (path.Length == 0 && hasFinishedPath)
-                    {
-                        Debug.Log(transform.position);
-                        SwapTarget();
-                        Debug.Log("patrol" + target + startPos);
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+                    spotlight.color = Color.red;
 
-                        hasFinishedPath = false;
-                    }
+                    state = State.CHASE;
+                }
+                
+                if (path.Length == 0 && hasFinishedPath)
+                {
+                    SwapTarget();
+                        
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    hasFinishedPath = false;
                 }
                 break;
             case State.CHASE:
@@ -84,6 +108,34 @@ public class Unit : MonoBehaviour
             case State.SEARCH:
                 break;
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            playerHeard = true;
+        }
+    }
+
+    bool CanSeePlayer()
+    {
+        if (Vector3.Distance(transform.position, player.position) < viewDistance)
+        {
+            Vector3 dirToPlayer = (player.position - transform.position).normalized;
+
+            float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
+
+            if (angleBetweenGuardAndPlayer < viewAngle / 2f)
+            {
+                if (!Physics.Linecast(transform.position, player.position, viewMask))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     void SwapTarget()
@@ -137,6 +189,10 @@ public class Unit : MonoBehaviour
     }
     
     public void OnDrawGizmos() {
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawRay(transform.position, transform.forward * viewDistance);
+        
         if (path != null) {
             for (int i = targetIndex; i < path.Length; i ++) {
                 Gizmos.color = Color.black;
