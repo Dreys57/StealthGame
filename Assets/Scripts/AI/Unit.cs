@@ -19,6 +19,7 @@ public class Unit : MonoBehaviour
     private State state = State.IDLE;
 
     private Vector3 target;
+    private Vector3 startPos;
 
     [SerializeField] private float speed = 5f;
 
@@ -30,24 +31,31 @@ public class Unit : MonoBehaviour
 
     private bool playerHeard;
     private bool playerSeen;
+    private bool hasFinishedPath;
 
     private void Start()
     {
         grid = FindObjectOfType<Grid>();
+
+        startPos = new Vector3(transform.position.x, 2f, transform.position.z);
+        
+        path = new Vector3[0];
     }
 
     private void Update()
     {
-        float minX = -(grid.GridWorldSize.x / 2);
-        float maxX = grid.GridWorldSize.x / 2;
-        float minY = -(grid.GridWorldSize.y / 2);
-        float maxY = grid.GridWorldSize.y / 2;
+        float minX = -(grid.GridWorldSize.x / 4);
+        float maxX = grid.GridWorldSize.x / 4;
+        float minY = -(grid.GridWorldSize.y / 4);
+        float maxY = grid.GridWorldSize.y / 4;
         
         switch (state)
         {
             case State.IDLE:
                 
-                target = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minY, maxY));
+                target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
+                Debug.Log("idle" + target + startPos);
+                PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
                 state = State.PATROL;
                 
@@ -60,12 +68,15 @@ public class Unit : MonoBehaviour
                 }
                 else
                 {
-                    if (Vector3.Distance(transform.position,target) < 0.1f)
+                    if (path.Length == 0 && hasFinishedPath)
                     {
-                        target = new Vector3(Random.Range(minX, maxX), transform.position.y, Random.Range(minY, maxY));
+                        Debug.Log(transform.position);
+                        SwapTarget();
+                        Debug.Log("patrol" + target + startPos);
+                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                        hasFinishedPath = false;
                     }
-                    
-                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
                 }
                 break;
             case State.CHASE:
@@ -73,6 +84,15 @@ public class Unit : MonoBehaviour
             case State.SEARCH:
                 break;
         }
+    }
+
+    void SwapTarget()
+    {
+        Vector3 tempPos = startPos;
+
+        startPos = target;
+
+        target = tempPos;
     }
 
     public void OnPathFound(Vector3[] newPath, bool pathSuccessful)
@@ -83,7 +103,6 @@ public class Unit : MonoBehaviour
             
             StopCoroutine(FollowPath());
             StartCoroutine(FollowPath());
-
         }
     }
 
@@ -99,6 +118,12 @@ public class Unit : MonoBehaviour
 
                 if (targetIndex >= path.Length)
                 {
+                    targetIndex = 0;
+                    
+                    path = new Vector3[0];
+
+                    hasFinishedPath = true;
+                    
                     yield break;
                 }
 
@@ -106,8 +131,24 @@ public class Unit : MonoBehaviour
             }
 
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
-
+            
             yield return null;
+        }
+    }
+    
+    public void OnDrawGizmos() {
+        if (path != null) {
+            for (int i = targetIndex; i < path.Length; i ++) {
+                Gizmos.color = Color.black;
+                Gizmos.DrawCube(path[i], Vector3.one);
+
+                if (i == targetIndex) {
+                    Gizmos.DrawLine(transform.position, path[i]);
+                }
+                else {
+                    Gizmos.DrawLine(path[i-1],path[i]);
+                }
+            }
         }
     }
 }

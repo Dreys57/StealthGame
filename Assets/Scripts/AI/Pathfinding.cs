@@ -72,6 +72,10 @@ public class Pathfinding : MonoBehaviour
                         {
                             openList.Add(neighbor);
                         }
+                        else
+                        {
+                            openList.UpdateItem(neighbor);
+                        }
                     }
                 }
             }
@@ -118,7 +122,7 @@ public class Pathfinding : MonoBehaviour
 
             if (newDirection != oldDirection)
             {
-                waypoints.Add(path[i].WorldPosition);
+                waypoints.Add(path[i - 1].WorldPosition);
             }
 
             oldDirection = newDirection;
