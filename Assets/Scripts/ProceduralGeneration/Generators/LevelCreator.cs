@@ -27,6 +27,16 @@ public class LevelCreator : MonoBehaviour
     private List<Vector3Int> horizontalDoorPossiblePositions;
     private List<Vector3Int> horizontalWallPossiblePositions;
     private List<Vector3Int> verticalWallPossiblePositions;
+
+    private bool foundStartRoom;
+
+    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject[] AStar;
+    [SerializeField] private GameObject[] guards;
+
+    private int maxAStarIndex = 5;
+    private int AStarIndex = 0;
+    private int guardsIndex = 0;
     
     
     void Start()
@@ -55,8 +65,85 @@ public class LevelCreator : MonoBehaviour
         }
 
         CreateWalls(parentWall);
+        
+        BFS(listOfRooms);
     }
 
+    void BFS(List<Node> rooms)
+    {
+        List<Node> closedList = new List<Node>();
+
+        foreach (Node room in rooms)
+        {
+            
+            if (closedList.Contains(room))
+            {
+                continue;
+            }
+
+            if (room.Parent != null)
+            {
+                if (!foundStartRoom)
+                {
+                    
+                    Vector3 spawnPlayerPos = new Vector3(
+                        Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
+                        2f,
+                        Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
+
+                    player.transform.position = spawnPlayerPos;
+
+                    foundStartRoom = true;
+                }
+               /*else
+                {
+                    Vector3 spawnEndObjectPos = new Vector3(
+                        Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
+                        2f, 
+                        Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
+
+                    //instantiate the object
+                }*/
+            }
+
+            int randomValue = Random.Range(0, 2);
+
+            if (randomValue > 0.5f)
+            {
+                if (AStarIndex <= maxAStarIndex)
+                {
+                    Vector3 spawnGuardPos = new Vector3(
+                        Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
+                        2f,
+                        Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
+                    
+                    Vector3 sum = new Vector3(room.BottomLeftAreaCorner.x, 2f, room.BottomLeftAreaCorner.y) 
+                                  + new Vector3(room.TopRightAreaCorner.x, 2f, room.TopRightAreaCorner.y);
+
+                    Vector3 center = sum / 2;
+
+                    AStar[AStarIndex].transform.position = center;
+                
+                    AStar[AStarIndex].GetComponent<Grid>().GridWorldSize = new Vector2(
+                        room.TopRightAreaCorner.x - room.BottomLeftAreaCorner.x, 
+                        room.TopRightAreaCorner.y - room.BottomLeftAreaCorner.y);
+
+                    AStarIndex++;
+
+                    guards[guardsIndex].transform.position = spawnGuardPos;
+
+                    guardsIndex ++;  
+                }
+            }
+            else
+            { 
+                //spawn random objects
+            }
+                
+            closedList.Add(room);
+        }
+    }
+    
     private void CreateWalls(GameObject parentWall)
     {
         foreach (Vector3Int wallPosition in horizontalWallPossiblePositions)
@@ -68,11 +155,17 @@ public class LevelCreator : MonoBehaviour
         {
             Instantiate(wallPrefab, wallPosition, Quaternion.Euler(0, 90, 0), parentWall.transform);
         }
+
+        for (int i = 0; i < AStar.Length; i++)
+        {
+            AStar[i].GetComponent<Grid>().FinishedLevelGeneration1 = true;
+            AStar[i].GetComponent<Pathfinding>().FinishedGeneration = true;
+        }
     }
 
     private void CreateMesh(Vector2 bottomLeftCorner, Vector2 topRightCorner)
     {
-        //Vertices for the mesh
+        //Vertices
         Vector3 bottomLeftVertice = new Vector3(bottomLeftCorner.x, 0, bottomLeftCorner.y);
         Vector3 bottomRightVertice = new Vector3(topRightCorner.x, 0, bottomLeftCorner.y);
         Vector3 topLeftVertice = new Vector3(bottomLeftCorner.x, 0, topRightCorner.y);
@@ -104,20 +197,7 @@ public class LevelCreator : MonoBehaviour
             1,
             3
         };
-        
-        Mesh mesh = new Mesh();
 
-        mesh.vertices = vertices;
-        mesh.uv = uvs;
-        mesh.triangles = triangles;
-        
-        GameObject levelFloor = new GameObject("Mesh" + bottomLeftCorner, typeof(MeshFilter), typeof(MeshRenderer));
-        
-        levelFloor.transform.position = Vector3.zero;
-        levelFloor.transform.localScale = Vector3.one;
-        levelFloor.GetComponent<MeshFilter>().mesh = mesh;
-        levelFloor.GetComponent<MeshRenderer>().material = material;
-        
         //Positionning the walls
         
         //On the X axis

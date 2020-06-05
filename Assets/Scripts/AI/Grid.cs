@@ -8,7 +8,11 @@ public class Grid : MonoBehaviour
 {
     [SerializeField] private Vector2 gridWorldSize;
 
-    public Vector2 GridWorldSize => gridWorldSize;
+    public Vector2 GridWorldSize
+    {
+        get => gridWorldSize;
+        set => gridWorldSize = value;
+    }
 
     [SerializeField] private float nodeRadius;
 
@@ -28,21 +32,33 @@ public class Grid : MonoBehaviour
     private int gridSizeX;
     private int gridSizeY;
 
-    private void Awake()
-    {
-        nodeDiameter = nodeRadius * 2;
+    private bool FinishedLevelGeneration;
 
-        gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
-        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+    public bool FinishedLevelGeneration1
+    {
+        get => FinishedLevelGeneration;
+        set => FinishedLevelGeneration = value;
+    }
+
+
+    private void Update()
+    {
+
+        if (FinishedLevelGeneration)
+        {
+            nodeDiameter = nodeRadius * 2;
+
+            gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+            gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         
-        CreateGrid();
+            CreateGrid();
+        }
     }
 
     private void CreateGrid()
     {
         grid = new PathfindingNode[gridSizeX,gridSizeY];
         
-        //TODO change this vector by the bottom left one from the room when transferring the script to the level
         Vector3 worldBottomLeft =
             transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
 
@@ -89,7 +105,6 @@ public class Grid : MonoBehaviour
 
     public PathfindingNode NodeFromWorldPoint(Vector3 worldPosition)
     {
-        //TODO when in room, take into account the fact that there needs to be an offset for the player position
         float percentX = (worldPosition.x + gridWorldSize.x / 2) / gridWorldSize.x;
         float percentY = (worldPosition.z + gridWorldSize.y / 2) / gridWorldSize.y;
 

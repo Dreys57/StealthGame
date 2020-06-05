@@ -15,7 +15,14 @@ public class LevelGenerator
         this.levelLength = levelLength;
     }
 
-    public List<Node> CalculateLevel(int maxIterations, int roomWidthMin, int roomLengthMin, int corridorWidth, float bottomLeftPointModifier, float topRightPointModifier, int offset)
+    public List<Node> CalculateLevel(
+        int maxIterations, 
+        int roomWidthMin, 
+        int roomLengthMin, 
+        int corridorWidth, 
+        float bottomLeftPointModifier, 
+        float topRightPointModifier, 
+        int offset)
     {
         BinarySpacePartitioner bsp = new BinarySpacePartitioner(levelWidth, levelLength);
         allNodesCollection = bsp.PrepareNodesCollection(maxIterations, roomWidthMin, roomLengthMin);
@@ -29,4 +36,6 @@ public class LevelGenerator
         
         return new List<Node>(roomList).Concat(corridors).ToList();
     }
+    
+    
 }

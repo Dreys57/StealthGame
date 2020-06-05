@@ -11,12 +11,25 @@ public class Pathfinding : MonoBehaviour
     private Grid grid;
 
     private PathRequestManager requestManager;
-    
-    private void Awake()
-    {
-        grid = GetComponent<Grid>();
 
-        requestManager = GetComponent<PathRequestManager>();
+    private bool finishedGeneration;
+
+    public bool FinishedGeneration
+    {
+        get => finishedGeneration;
+        set => finishedGeneration = value;
+    }
+
+    private void Update()
+    {
+        if (finishedGeneration)
+        {
+            grid = GetComponent<Grid>();
+
+            requestManager = GetComponent<PathRequestManager>();
+
+            finishedGeneration = false;
+        }
     }
 
     public void StartFindPath(Vector3 startPos, Vector3 targetPos)
