@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.UI;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -26,11 +27,15 @@ public class Unit : MonoBehaviour
     [SerializeField] private float speed = 5f;
     [SerializeField] private float viewDistance;
 
+    [SerializeField] private int maxDistanceTargetToPlayer = 10;
+
     private Vector3[] path;
 
     private int targetIndex;
-    
+
     private float viewAngle;
+    private float timer  = 5f;
+    private float timerValue = 5f;
 
     private Grid grid;
 
@@ -53,6 +58,13 @@ public class Unit : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         spotlight = GetComponentInChildren<Light>();
+
+        viewAngle = spotlight.spotAngle;
+    }
+
+    private void FixedUpdate()
+    {
+        
     }
 
     private void Update()
@@ -83,13 +95,27 @@ public class Unit : MonoBehaviour
                     path = new Vector3[0];
 
                     targetIndex = 0;
+
+                    target = player.transform.position;
                     
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
                     state = State.SEARCH;
                 }
                 
                 if(playerSeen)
                 {
                     spotlight.color = Color.red;
+                    
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    target = player.transform.position;
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
                     state = State.CHASE;
                 }
@@ -104,8 +130,84 @@ public class Unit : MonoBehaviour
                 }
                 break;
             case State.CHASE:
+                
+                playerSeen = CanSeePlayer();
+                
+                if (Vector3.Distance(target, player.transform.position) > maxDistanceTargetToPlayer)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    target = player.transform.position;
+
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+                }
+
+                if (!playerSeen)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    target = player.transform.position;
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.SEARCH;
+                }
+
                 break;
             case State.SEARCH:
+                
+                playerSeen = CanSeePlayer();
+                
+                if (hasFinishedPath)
+                {
+                    timer -= 1 * Time.deltaTime;
+                }
+                
+                if (timer <= 0 && !playerSeen)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    timer = timerValue;
+
+                    playerHeard = false;
+                    
+                    target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.PATROL;
+                }
+                else if (timer <= 0 && playerSeen)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+                    
+                    timer = timerValue;
+
+                    playerHeard = false;
+
+                    target = player.transform.position;
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.CHASE;
+                }
+                
                 break;
         }
     }
@@ -183,7 +285,9 @@ public class Unit : MonoBehaviour
             }
 
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
-            
+
+            yield return new WaitForEndOfFrame();
+
             yield return null;
         }
     }
