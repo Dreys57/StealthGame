@@ -66,7 +66,20 @@ public class PlayerMovement : MonoBehaviour
             CheckCrouch();
         }
     }
-    
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Guard"))
+        {
+            //game over
+        }
+
+        if (other.CompareTag("WinObject"))
+        {
+            //return to main menu
+        }
+    }
+
     void CheckCrouch()
     {
         if (isCrouching)

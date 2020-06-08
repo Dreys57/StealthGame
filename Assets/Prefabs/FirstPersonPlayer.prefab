@@ -250,6 +250,7 @@ GameObject:
   - component: {fileID: 2674849155192587614}
   - component: {fileID: 2674849155192587615}
   - component: {fileID: 2674849155192587585}
+  - component: {fileID: 2234636015782183872}
   m_Layer: 0
   m_Name: FirstPersonPlayer
   m_TagString: Player
@@ -316,3 +317,17 @@ MonoBehaviour:
   jumpHeight: 3
   crouchHeight: 2
   crouchSpeed: 6
+--- !u!136 &2234636015782183872
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2674849155192587612}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 1.58
+  m_Height: 5.2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
