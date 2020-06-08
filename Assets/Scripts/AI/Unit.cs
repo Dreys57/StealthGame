@@ -23,6 +23,8 @@ public class Unit : MonoBehaviour
     private Vector3 startPos;
     
     [SerializeField] private LayerMask viewMask;
+
+    [SerializeField] private GameObject AStar;
     
     [SerializeField] private float speed = 5f;
     [SerializeField] private float viewDistance;
@@ -36,8 +38,12 @@ public class Unit : MonoBehaviour
     private float viewAngle;
     private float timer  = 5f;
     private float timerValue = 5f;
+    private float minX;
+    private float maxX;
+    private float minY;
+    private float maxY;
 
-    [SerializeField] private Grid grid;
+    private Grid grid;
 
     private Transform player;
 
@@ -49,7 +55,7 @@ public class Unit : MonoBehaviour
 
     private void Start()
     {
-        grid = FindObjectOfType<Grid>();
+        grid = AStar.GetComponent<Grid>();
 
         startPos = new Vector3(transform.position.x, 2f, transform.position.z);
         
@@ -69,152 +75,152 @@ public class Unit : MonoBehaviour
 
     private void Update()
     {
+        switch (state)
+        { 
+            case State.IDLE:
 
-        if (grid.FinishedLevelGeneration1)
-        {
-            float minX = -(grid.GridWorldSize.x / 4);
-            float maxX = grid.GridWorldSize.x / 4;
-            float minY = -(grid.GridWorldSize.y / 4);
-            float maxY = grid.GridWorldSize.y / 4;
-        
-            switch (state)
-            {
-                case State.IDLE:
-                
+                if (grid.FinishedLevelGeneration1)
+                {
+                    minX = grid.transform.position.x - (grid.GridSizeX / 4);
+                    maxX = grid.transform.position.x + (grid.GridSizeX / 4);
+                    minY = grid.transform.position.z - (grid.GridSizeY / 4);
+                    maxY = grid.transform.position.z + (grid.GridSizeY / 4);
+                    
                     target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
                     PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
                     state = State.PATROL;
+                }
+
+                break;
+            case State.PATROL:
+
+                playerSeen = CanSeePlayer();
+
+                if (playerHeard)
+                {
+                    StopAllCoroutines();
                     
-                    break;
-                case State.PATROL:
+                    path = new Vector3[0];
 
-                    playerSeen = CanSeePlayer();
+                    targetIndex = 0;
 
-                    if (playerHeard)
-                    {
-                        StopAllCoroutines();
+                    target = player.transform.position;
                     
-                        path = new Vector3[0];
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
-                        targetIndex = 0;
-
-                        target = player.transform.position;
-                    
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-
-                        state = State.SEARCH;
-                    }
+                    state = State.SEARCH;
+                }
                 
-                    if(playerSeen)
-                    {
-                        spotlight.color = Color.red;
+                if(playerSeen)
+                {
+                    spotlight.color = Color.red;
                     
-                        StopAllCoroutines();
+                    StopAllCoroutines();
                     
-                        path = new Vector3[0];
+                    path = new Vector3[0];
 
-                        targetIndex = 0;
+                    targetIndex = 0;
 
-                        target = player.transform.position;
+                    target = player.transform.position;
                     
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
-                        state = State.CHASE;
-                    }
+                    state = State.CHASE;
+                }
                 
-                    if (path.Length == 0 && hasFinishedPath)
-                    {
-                        SwapTarget();
+                if (path.Length == 0 && hasFinishedPath)
+                {
+                    SwapTarget();
                         
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
-                        hasFinishedPath = false;
-                    }
-                    break;
-                case State.CHASE:
+                    hasFinishedPath = false;
+                }
                 
-                    playerSeen = CanSeePlayer();
+                break;
+            case State.CHASE:
                 
-                    if (Vector3.Distance(target, player.transform.position) > maxDistanceTargetToPlayer)
-                    {
-                        StopAllCoroutines();
-                    
-                        path = new Vector3[0];
-
-                        targetIndex = 0;
-
-                        target = player.transform.position;
-
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-                    }
-
-                    if (!playerSeen)
-                    {
-                        StopAllCoroutines();
-                    
-                        path = new Vector3[0];
-
-                        targetIndex = 0;
-
-                        target = player.transform.position;
-                    
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-
-                        state = State.SEARCH;
-                    }
-
-                    break;
-                case State.SEARCH:
+                playerSeen = CanSeePlayer();
                 
-                    playerSeen = CanSeePlayer();
+                if (Vector3.Distance(target, player.transform.position) > maxDistanceTargetToPlayer)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    target = player.transform.position;
+
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+                }
+
+                if (!playerSeen)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    target = player.transform.position;
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.SEARCH;
+                }
+
+                break;
+            case State.SEARCH:
                 
-                    if (hasFinishedPath)
-                    {
-                        timer -= 1 * Time.deltaTime;
-                    }
+                playerSeen = CanSeePlayer();
                 
-                    if (timer <= 0 && !playerSeen)
-                    {
-                        StopAllCoroutines();
-                    
-                        path = new Vector3[0];
-
-                        targetIndex = 0;
-
-                        timer = timerValue;
-
-                        playerHeard = false;
-                    
-                        target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
-                    
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-
-                        state = State.PATROL;
-                    }
-                    else if (timer <= 0 && playerSeen)
-                    {
-                        StopAllCoroutines();
-                    
-                        path = new Vector3[0];
-
-                        targetIndex = 0;
-                    
-                        timer = timerValue;
-
-                        playerHeard = false;
-
-                        target = player.transform.position;
-                    
-                        PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-
-                        state = State.CHASE;
-                    }
+                if (hasFinishedPath)
+                {
+                    timer -= 1 * Time.deltaTime;
+                }
                 
-                    break;
-            }
+                if (timer <= 0 && !playerSeen)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    timer = timerValue;
+
+                    playerHeard = false;
+                    
+                    target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.PATROL;
+                }
+                else if (timer <= 0 && playerSeen)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+                    
+                    timer = timerValue;
+
+                    playerHeard = false;
+
+                    target = player.transform.position;
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.CHASE;
+                }
+                
+                break;
         }
-        
+
     }
 
     private void OnTriggerEnter(Collider other)
@@ -258,6 +264,7 @@ public class Unit : MonoBehaviour
     {
         if (pathSuccessful)
         {
+            
             path = newPath;
             
             StopCoroutine(FollowPath());

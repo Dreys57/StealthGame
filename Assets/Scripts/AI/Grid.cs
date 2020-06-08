@@ -30,9 +30,14 @@ public class Grid : MonoBehaviour
     private float nodeDiameter;
     
     private int gridSizeX;
-    private int gridSizeY;
 
-    private bool FinishedLevelGeneration;
+    private int gridSizeY;
+    
+    public int GridSizeX => gridSizeX;
+
+    public int GridSizeY => gridSizeY;
+
+    private bool FinishedLevelGeneration = false;
 
     public bool FinishedLevelGeneration1
     {
@@ -41,18 +46,14 @@ public class Grid : MonoBehaviour
     }
 
 
-    private void Update()
+    private void Start()
     {
+        nodeDiameter = nodeRadius * 2;
 
-        if (FinishedLevelGeneration)
-        {
-            nodeDiameter = nodeRadius * 2;
-
-            gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
-            gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
+        gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
+        gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
         
-            CreateGrid();
-        }
+        CreateGrid();
     }
 
     private void CreateGrid()

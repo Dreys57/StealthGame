@@ -12,24 +12,11 @@ public class Pathfinding : MonoBehaviour
 
     private PathRequestManager requestManager;
 
-    private bool finishedGeneration;
-
-    public bool FinishedGeneration
+    private void Start()
     {
-        get => finishedGeneration;
-        set => finishedGeneration = value;
-    }
+        grid = GetComponent<Grid>();
 
-    private void Update()
-    {
-        if (finishedGeneration)
-        {
-            grid = GetComponent<Grid>();
-
-            requestManager = GetComponent<PathRequestManager>();
-
-            finishedGeneration = false;
-        }
+        requestManager = GetComponent<PathRequestManager>();
     }
 
     public void StartFindPath(Vector3 startPos, Vector3 targetPos)
@@ -39,11 +26,10 @@ public class Pathfinding : MonoBehaviour
 
     void FindPath(Vector3 startPos, Vector3 targetPos)
     {
-       
         Vector3[] waypoints = new Vector3[0];
 
         bool pathSucess = false;
-        
+
         PathfindingNode startNode = grid.NodeFromWorldPoint(startPos);
         PathfindingNode targetNode = grid.NodeFromWorldPoint(targetPos);
 

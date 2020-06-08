@@ -757,6 +757,12 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &558208798 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6337102874085846925, guid: a926e51b5a186fb4eb98de9d6c8da5f8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6337102875712839360}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &629625202
 GameObject:
   m_ObjectHideFlags: 0
@@ -1891,6 +1897,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2989992475038329675, guid: c58e261b30a2e774dbcd691c321547a5,
+        type: 3}
+      propertyPath: AStar
+      value: 
+      objectReference: {fileID: 558208798}
     - target: {fileID: 2989992475038329718, guid: c58e261b30a2e774dbcd691c321547a5,
         type: 3}
       propertyPath: m_Name
@@ -1909,6 +1920,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: A*
+      objectReference: {fileID: 0}
+    - target: {fileID: 6337102874085846926, guid: a926e51b5a186fb4eb98de9d6c8da5f8,
+        type: 3}
+      propertyPath: gridWorldSize.x
+      value: 97.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 6337102874085846926, guid: a926e51b5a186fb4eb98de9d6c8da5f8,
+        type: 3}
+      propertyPath: gridWorldSize.y
+      value: 99.57
       objectReference: {fileID: 0}
     - target: {fileID: 6337102874085846927, guid: a926e51b5a186fb4eb98de9d6c8da5f8,
         type: 3}

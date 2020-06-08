@@ -30,7 +30,7 @@ public class PathRequestManager : MonoBehaviour
 
     private bool isPorcessingPath;
 
-    private void Awake()
+    private void Start()
     {
         instance = this;
 

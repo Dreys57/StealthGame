@@ -22,6 +22,7 @@ public class LevelCreator : MonoBehaviour
     [SerializeField] private Material material;
 
     [SerializeField] private GameObject wallPrefab;
+    [SerializeField] private GameObject obstaclePrefab;
 
     private List<Vector3Int> verticalDoorPossiblePositions;
     private List<Vector3Int> horizontalDoorPossiblePositions;
@@ -37,9 +38,9 @@ public class LevelCreator : MonoBehaviour
     private int maxAStarIndex = 5;
     private int AStarIndex = 0;
     private int guardsIndex = 0;
-    
-    
-    void Start()
+
+
+    private void Awake()
     {
         CreateLevel();
     }
@@ -48,7 +49,14 @@ public class LevelCreator : MonoBehaviour
     {
         LevelGenerator generator = new LevelGenerator(levelWidth, levelLength);
 
-        List<Node> listOfRooms = generator.CalculateLevel(maxIterations, roomWidthMin, roomLengthMin, corridorWidth, bottomLeftPointModifier, topRightPointModifier, offset);
+        List<Node> listOfRooms = generator.CalculateLevel(
+            maxIterations, 
+            roomWidthMin, 
+            roomLengthMin, 
+            corridorWidth, 
+            bottomLeftPointModifier, 
+            topRightPointModifier,
+            offset);
         
         GameObject parentWall = new GameObject("ParentWall");
         parentWall.transform.parent = transform;
@@ -66,10 +74,36 @@ public class LevelCreator : MonoBehaviour
 
         CreateWalls(parentWall);
         
-        BFS(listOfRooms);
+        SpawnObjects(listOfRooms);
+        
+        SpawnPlayerAndGuards(listOfRooms);
+        
+        for (int i = 0; i < AStar.Length; i++)
+        {
+            AStar[i].GetComponent<Grid>().FinishedLevelGeneration1 = true;
+        }
     }
 
-    void BFS(List<Node> rooms)
+    void SpawnObjects(List<Node> rooms)
+    {
+        foreach (Node room in rooms)
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                if (room.Parent != null)
+                {
+                    Vector3 spawnObstaclePos = new Vector3(
+                        Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
+                        0f,
+                        Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
+                
+                    Instantiate(obstaclePrefab, spawnObstaclePos, Quaternion.identity);
+                }
+            }
+        }
+    }
+
+    void SpawnPlayerAndGuards(List<Node> rooms)
     {
         List<Node> closedList = new List<Node>();
 
@@ -85,7 +119,6 @@ public class LevelCreator : MonoBehaviour
             {
                 if (!foundStartRoom)
                 {
-                    
                     Vector3 spawnPlayerPos = new Vector3(
                         Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
                         2f,
@@ -110,7 +143,7 @@ public class LevelCreator : MonoBehaviour
 
             if (randomValue > 0.5f)
             {
-                if (AStarIndex <= maxAStarIndex)
+                if (AStarIndex < maxAStarIndex)
                 {
                     Vector3 spawnGuardPos = new Vector3(
                         Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
@@ -135,11 +168,7 @@ public class LevelCreator : MonoBehaviour
                     guardsIndex ++;  
                 }
             }
-            else
-            { 
-                //spawn random objects
-            }
-                
+
             closedList.Add(room);
         }
     }
@@ -154,12 +183,6 @@ public class LevelCreator : MonoBehaviour
         foreach (Vector3Int wallPosition in verticalWallPossiblePositions)
         {
             Instantiate(wallPrefab, wallPosition, Quaternion.Euler(0, 90, 0), parentWall.transform);
-        }
-
-        for (int i = 0; i < AStar.Length; i++)
-        {
-            AStar[i].GetComponent<Grid>().FinishedLevelGeneration1 = true;
-            AStar[i].GetComponent<Pathfinding>().FinishedGeneration = true;
         }
     }
 

@@ -204,6 +204,7 @@ MonoBehaviour:
   viewMask:
     serializedVersion: 2
     m_Bits: 512
+  AStar: {fileID: 0}
   speed: 5
   viewDistance: 20
   maxDistanceTargetToPlayer: 10
