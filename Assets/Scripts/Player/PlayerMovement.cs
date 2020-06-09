@@ -2,9 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [SerializeField] private GameObject panelGameOver;
+    
     [SerializeField] private CharacterController controller;
 
     [SerializeField] private Transform groundCheck;
@@ -25,7 +28,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 velocity;
 
     private bool isGrounded;
-    private bool isCrouching = false;
+    private bool isCrouching;
+
+    public bool IsCrouching => isCrouching;
 
     private void Start()
     {
@@ -71,12 +76,16 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.CompareTag("Guard"))
         {
-            //game over
+            StopAllCoroutines();
+
+            Time.timeScale = 0;
+            
+            panelGameOver.gameObject.SetActive(true);
         }
 
         if (other.CompareTag("WinObject"))
         {
-            //return to main menu
+            SceneManager.LoadScene("MainMenu");
         }
     }
 

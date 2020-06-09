@@ -28,7 +28,6 @@ public class Pathfinding : MonoBehaviour
 
     IEnumerator FindPath(Vector3 startPos, Vector3 targetPos)
     {
-        Debug.Log("name " + grid.name + " target " + targetPos);
         Vector3[] waypoints = new Vector3[0];
 
         bool pathSucess = false;
@@ -91,7 +90,6 @@ public class Pathfinding : MonoBehaviour
         if (pathSucess)
         {
             waypoints = RetracePath(startNode, targetNode);
-            Debug.Log("waypoints " + waypoints.Length);
         }
         
         requestManager.FinishedProcessingPath(waypoints, pathSucess);

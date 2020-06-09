@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 2989992475038329672}
   - component: {fileID: 2989992475038329675}
   - component: {fileID: 2989992475038329719}
-  - component: {fileID: 2989992475038329676}
+  - component: {fileID: 8390928310805260808}
   m_Layer: 0
   m_Name: Guard
   m_TagString: Guard
@@ -204,9 +204,15 @@ MonoBehaviour:
   viewMask:
     serializedVersion: 2
     m_Bits: 512
+  playerMask:
+    serializedVersion: 2
+    m_Bits: 1024
   AStar: {fileID: 0}
   speed: 5
-  viewDistance: 20
+  turnSpeed: 90
+  viewDistance: 10
+  waitTime: 0.3
+  sphereRadius: 5
   maxDistanceTargetToPlayer: 10
 --- !u!136 &2989992475038329719
 CapsuleCollider:
@@ -216,22 +222,23 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2989992475038329718}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 1.1
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!135 &2989992475038329676
-SphereCollider:
+--- !u!136 &8390928310805260808
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2989992475038329718}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 5.63
+  m_Radius: 0.49999997
+  m_Height: 2
+  m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}

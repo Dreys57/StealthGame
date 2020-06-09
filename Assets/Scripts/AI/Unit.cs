@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor.UI;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class Unit : MonoBehaviour
@@ -23,6 +24,7 @@ public class Unit : MonoBehaviour
     private Vector3 startPos;
     
     [SerializeField] private LayerMask viewMask;
+    [SerializeField] private LayerMask playerMask;
 
     [SerializeField] private GameObject AStar;
     
@@ -30,6 +32,7 @@ public class Unit : MonoBehaviour
     [SerializeField] private float turnSpeed = 90f;
     [SerializeField] private float viewDistance;
     [SerializeField] private float waitTime = 0.3f;
+    [SerializeField] private float sphereRadius;
 
     [SerializeField] private int maxDistanceTargetToPlayer = 10;
 
@@ -49,7 +52,8 @@ public class Unit : MonoBehaviour
 
     private PathRequestManager requestManager;
 
-    private Transform player;
+    private GameObject player;
+    private PlayerMovement playerMovement;
 
     private Light spotlight;
 
@@ -65,7 +69,9 @@ public class Unit : MonoBehaviour
 
         startPos = new Vector3(transform.position.x, 2f, transform.position.z);
 
-        player = GameObject.FindGameObjectWithTag("Player").transform;
+        player = GameObject.FindGameObjectWithTag("Player");
+
+        playerMovement = player.gameObject.GetComponent<PlayerMovement>();
 
         spotlight = GetComponentInChildren<Light>();
 
@@ -93,7 +99,6 @@ public class Unit : MonoBehaviour
 
                     targetIndex = 0;
                     
-                    Debug.Log("name " + gameObject.name + " target " + target + " guardPos " + transform.position);
                     PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
                     state = State.PATROL;
@@ -102,6 +107,7 @@ public class Unit : MonoBehaviour
                 break;
             case State.PATROL:
 
+                playerHeard = CanHearPlayer();
                 playerSeen = CanSeePlayer();
 
                 if (playerHeard)
@@ -147,18 +153,17 @@ public class Unit : MonoBehaviour
                     SwapTarget();
                     
                     hasFinishedPath = false;
-                    Debug.Log("name " + gameObject.name + " target " + target);
-                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
-
                     
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
                 }
                 
                 break;
             case State.CHASE:
                 
+                playerHeard = CanHearPlayer();
                 playerSeen = CanSeePlayer();
 
-                if (player.position.x > grid.GridWorldSize.x || player.position.y > grid.GridWorldSize.y)
+                if (player.transform.position.x > grid.GridWorldSize.x || player.transform.position.y > grid.GridWorldSize.y)
                 {
                     StopAllCoroutines();
                     
@@ -256,31 +261,30 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private void Update()
+    private bool CanHearPlayer()
     {
-        
-
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        if (Physics.CheckSphere(transform.position, sphereRadius, playerMask))
         {
-            playerHeard = true;
+            if (!playerMovement.IsCrouching)
+            {
+                return true;
+            }
         }
+
+        return false;
     }
 
-    bool CanSeePlayer()
+    private bool CanSeePlayer()
     {
-        if (Vector3.Distance(transform.position, player.position) < viewDistance)
+        if (Vector3.Distance(transform.position, player.transform.position) < viewDistance)
         {
-            Vector3 dirToPlayer = (player.position - transform.position).normalized;
+            Vector3 dirToPlayer = (player.transform.position - transform.position).normalized;
 
             float angleBetweenGuardAndPlayer = Vector3.Angle(transform.forward, dirToPlayer);
 
             if (angleBetweenGuardAndPlayer < viewAngle / 2f)
             {
-                if (!Physics.Linecast(transform.position, player.position, viewMask))
+                if (!Physics.Linecast(transform.position, player.transform.position, viewMask))
                 {
                     return true;
                 }
@@ -374,6 +378,9 @@ public class Unit : MonoBehaviour
         
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, transform.forward * viewDistance);
+        
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(transform.position, sphereRadius);
         
         if (path != null) {
             for (int i = targetIndex; i < path.Length; i ++) {
