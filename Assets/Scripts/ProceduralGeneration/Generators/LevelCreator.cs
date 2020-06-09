@@ -23,6 +23,7 @@ public class LevelCreator : MonoBehaviour
 
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject obstaclePrefab;
+    [SerializeField] private GameObject goalPrefab;
 
     private List<Vector3Int> verticalDoorPossiblePositions;
     private List<Vector3Int> horizontalDoorPossiblePositions;
@@ -30,12 +31,13 @@ public class LevelCreator : MonoBehaviour
     private List<Vector3Int> verticalWallPossiblePositions;
 
     private bool foundStartRoom;
+    private bool foundEndRoom;
 
     [SerializeField] private GameObject player;
     [SerializeField] private GameObject[] AStar;
     [SerializeField] private GameObject[] guards;
 
-    private int maxAStarIndex = 5;
+    private int maxAStarIndex = 1;
     private int AStarIndex = 0;
     private int guardsIndex = 0;
 
@@ -80,7 +82,7 @@ public class LevelCreator : MonoBehaviour
         
         for (int i = 0; i < AStar.Length; i++)
         {
-            AStar[i].GetComponent<Grid>().FinishedLevelGeneration1 = true;
+            AStar[i].GetComponentInChildren<Grid>().FinishedLevelGeneration1 = true;
         }
     }
 
@@ -96,7 +98,7 @@ public class LevelCreator : MonoBehaviour
                         Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
                         0f,
                         Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
-                
+                    
                     Instantiate(obstaclePrefab, spawnObstaclePos, Quaternion.identity);
                 }
             }
@@ -105,16 +107,8 @@ public class LevelCreator : MonoBehaviour
 
     void SpawnPlayerAndGuards(List<Node> rooms)
     {
-        List<Node> closedList = new List<Node>();
-
         foreach (Node room in rooms)
         {
-            
-            if (closedList.Contains(room))
-            {
-                continue;
-            }
-
             if (room.Parent != null)
             {
                 if (!foundStartRoom)
@@ -127,49 +121,54 @@ public class LevelCreator : MonoBehaviour
                     player.transform.position = spawnPlayerPos;
 
                     foundStartRoom = true;
-                }
-               /*else
-                {
-                    Vector3 spawnEndObjectPos = new Vector3(
-                        Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
-                        2f, 
-                        Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
-
-                    //instantiate the object
-                }*/
-            }
-
-            int randomValue = Random.Range(0, 2);
-
-            if (randomValue > 0.5f)
-            {
-                if (AStarIndex < maxAStarIndex)
-                {
-                    Vector3 spawnGuardPos = new Vector3(
-                        Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
-                        2f,
-                        Random.Range(room.BottomLeftAreaCorner.y, room.TopRightAreaCorner.y));
                     
+                    continue;
+                }
+                
+               if(!foundEndRoom)
+                {
                     Vector3 sum = new Vector3(room.BottomLeftAreaCorner.x, 2f, room.BottomLeftAreaCorner.y) 
                                   + new Vector3(room.TopRightAreaCorner.x, 2f, room.TopRightAreaCorner.y);
 
                     Vector3 center = sum / 2;
 
-                    AStar[AStarIndex].transform.position = center;
-                
-                    AStar[AStarIndex].GetComponent<Grid>().GridWorldSize = new Vector2(
-                        room.TopRightAreaCorner.x - room.BottomLeftAreaCorner.x, 
-                        room.TopRightAreaCorner.y - room.BottomLeftAreaCorner.y);
+                    Instantiate(goalPrefab, center, Quaternion.identity);
 
-                    AStarIndex++;
-
-                    guards[guardsIndex].transform.position = spawnGuardPos;
-
-                    guardsIndex ++;  
+                    foundEndRoom = true;
+                    
+                    continue;
                 }
-            }
 
-            closedList.Add(room);
+               int randomValue = Random.Range(0, 2);
+
+                if (randomValue > 0.5f)
+                {
+                    if (AStarIndex < maxAStarIndex)
+                    {
+                        Vector3 sum = new Vector3(room.BottomLeftAreaCorner.x, 2f, room.BottomLeftAreaCorner.y) 
+                                      + new Vector3(room.TopRightAreaCorner.x, 2f, room.TopRightAreaCorner.y);
+
+                        Vector3 center = sum / 2;
+
+                        AStar[AStarIndex].transform.position = center;
+                
+                        AStar[AStarIndex].GetComponent<Grid>().GridWorldSize = new Vector2(
+                            room.TopRightAreaCorner.x - room.BottomLeftAreaCorner.x, 
+                            room.TopRightAreaCorner.y - room.BottomLeftAreaCorner.y);
+
+                        AStarIndex++;
+                        
+                        guards[guardsIndex].transform.position = center;
+
+                        guardsIndex ++;
+                    }
+                } 
+            }
+        }
+
+        for (int i = 0; i < guards.Length; i++)
+        {
+            guards[i].SetActive(true);
         }
     }
     

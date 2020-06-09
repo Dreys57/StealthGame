@@ -24,16 +24,16 @@ public class PathRequestManager : MonoBehaviour
 
     private PathRequest currentPathRequest;
 
-    private static PathRequestManager instance;
-
     private Pathfinding pathfinding;
+
+    private static PathRequestManager instance;
 
     private bool isPorcessingPath;
 
     private void Start()
     {
         instance = this;
-
+        
         pathfinding = GetComponent<Pathfinding>();
     }
 
@@ -48,6 +48,7 @@ public class PathRequestManager : MonoBehaviour
 
     private void TryProcessNext()
     {
+        Debug.Log(isPorcessingPath);
         if (!isPorcessingPath && pathRequests.Count > 0)
         {
             currentPathRequest = pathRequests.Dequeue();
@@ -60,6 +61,7 @@ public class PathRequestManager : MonoBehaviour
 
     public void FinishedProcessingPath(Vector3[] path, bool sucess)
     {
+        Debug.Log("ici");
         currentPathRequest.callback(path, sucess);
 
         isPorcessingPath = false;

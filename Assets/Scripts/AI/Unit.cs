@@ -27,7 +27,9 @@ public class Unit : MonoBehaviour
     [SerializeField] private GameObject AStar;
     
     [SerializeField] private float speed = 5f;
+    [SerializeField] private float turnSpeed = 90f;
     [SerializeField] private float viewDistance;
+    [SerializeField] private float waitTime = 0.3f;
 
     [SerializeField] private int maxDistanceTargetToPlayer = 10;
 
@@ -45,6 +47,8 @@ public class Unit : MonoBehaviour
 
     private Grid grid;
 
+    private PathRequestManager requestManager;
+
     private Transform player;
 
     private Light spotlight;
@@ -55,12 +59,12 @@ public class Unit : MonoBehaviour
 
     private void Start()
     {
-        grid = AStar.GetComponent<Grid>();
+        grid = AStar.gameObject.GetComponent<Grid>();
+
+        requestManager = AStar.gameObject.GetComponent<PathRequestManager>();
 
         startPos = new Vector3(transform.position.x, 2f, transform.position.z);
-        
-        path = new Vector3[0];
-        
+
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         spotlight = GetComponentInChildren<Light>();
@@ -70,23 +74,26 @@ public class Unit : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
-    }
-
-    private void Update()
-    {
         switch (state)
         { 
             case State.IDLE:
 
                 if (grid.FinishedLevelGeneration1)
                 {
-                    minX = grid.transform.position.x - (grid.GridSizeX / 4);
-                    maxX = grid.transform.position.x + (grid.GridSizeX / 4);
-                    minY = grid.transform.position.z - (grid.GridSizeY / 4);
-                    maxY = grid.transform.position.z + (grid.GridSizeY / 4);
+                    minX = grid.transform.position.x - (grid.GridWorldSize.x / 2) + 4;
+                    maxX = grid.transform.position.x + (grid.GridWorldSize.x / 2) - 4;
+                    minY = grid.transform.position.z - (grid.GridWorldSize.y / 2) + 4;
+                    maxY = grid.transform.position.z + (grid.GridWorldSize.y / 2) - 4;
                     
                     target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
+                    
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+                    
+                    Debug.Log("name " + gameObject.name + " target " + target + " guardPos " + transform.position);
                     PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
                     state = State.PATROL;
@@ -131,17 +138,44 @@ public class Unit : MonoBehaviour
                 
                 if (path.Length == 0 && hasFinishedPath)
                 {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+                    
                     SwapTarget();
-                        
+                    
+                    hasFinishedPath = false;
+                    Debug.Log("name " + gameObject.name + " target " + target);
                     PathRequestManager.RequestPath(transform.position, target, OnPathFound);
 
-                    hasFinishedPath = false;
+                    
                 }
                 
                 break;
             case State.CHASE:
                 
                 playerSeen = CanSeePlayer();
+
+                if (player.position.x > grid.GridWorldSize.x || player.position.y > grid.GridWorldSize.y)
+                {
+                    StopAllCoroutines();
+                    
+                    path = new Vector3[0];
+
+                    targetIndex = 0;
+
+                    timer = timerValue;
+
+                    playerHeard = false;
+                    
+                    target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
+                    
+                    PathRequestManager.RequestPath(transform.position, target, OnPathFound);
+
+                    state = State.PATROL;
+                }
                 
                 if (Vector3.Distance(target, player.transform.position) > maxDistanceTargetToPlayer)
                 {
@@ -220,6 +254,11 @@ public class Unit : MonoBehaviour
                 
                 break;
         }
+    }
+
+    private void Update()
+    {
+        
 
     }
 
@@ -251,6 +290,22 @@ public class Unit : MonoBehaviour
         return false;
     }
 
+    IEnumerator TurnToFaceTarget(Vector3 lookTarget)
+    {
+        Vector3 dirToLookTarget = (lookTarget - transform.position).normalized;
+
+        float targetAngle = 90 - Mathf.Atan2(dirToLookTarget.z, dirToLookTarget.x) * Mathf.Rad2Deg;
+
+        while (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, targetAngle)) > 0.05f)
+        {
+            float angle = Mathf.MoveTowardsAngle(transform.eulerAngles.y, targetAngle, turnSpeed * Time.deltaTime);
+
+            transform.eulerAngles = Vector3.up * angle;
+
+            yield return null;
+        }
+    }
+
     void SwapTarget()
     {
         Vector3 tempPos = startPos;
@@ -274,8 +329,17 @@ public class Unit : MonoBehaviour
 
     IEnumerator FollowPath()
     {
-        Vector3 currentWaypoint = path[0];
-
+        Vector3 currentWaypoint = new Vector3();
+        
+        if (path.Length == 0)
+        {
+            currentWaypoint = target;
+        }
+        else
+        {
+            currentWaypoint = path[0];
+        }
+        
         while (true)
         {
             if (transform.position == currentWaypoint)
@@ -294,11 +358,13 @@ public class Unit : MonoBehaviour
                 }
 
                 currentWaypoint = path[targetIndex];
+
+                yield return new WaitForSeconds(waitTime);
+
+                yield return StartCoroutine(TurnToFaceTarget(currentWaypoint));
             }
-
+            
             transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, speed * Time.deltaTime);
-
-            yield return new WaitForEndOfFrame();
 
             yield return null;
         }

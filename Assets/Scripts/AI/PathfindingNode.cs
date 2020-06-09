@@ -49,7 +49,11 @@ public class PathfindingNode : IHeapItem<PathfindingNode>
         set => hCost = value;
     }
 
-    public bool Walkable {get => walkable;}
+    public bool Walkable
+    {
+        get => walkable;
+        set => walkable = value;
+    }
 
     public Vector3 WorldPosition {get => worldPosition;}
 
