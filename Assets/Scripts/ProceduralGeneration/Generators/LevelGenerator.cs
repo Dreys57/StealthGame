@@ -15,7 +15,7 @@ public class LevelGenerator
         this.levelLength = levelLength;
     }
 
-    public List<Node> CalculateLevel(
+    public List<Node> BuildLevel(
         int maxIterations, 
         int roomWidthMin, 
         int roomLengthMin, 

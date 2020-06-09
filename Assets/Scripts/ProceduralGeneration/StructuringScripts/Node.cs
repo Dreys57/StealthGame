@@ -8,8 +8,6 @@ public abstract class Node
 
     public List<Node> ChildrenNodeList => childrenNodeList;
 
-    public bool Visited { get; set; }
-
     public Vector2Int BottomLeftAreaCorner { get; set; }
     
     public Vector2Int BottomRightAreaCorner { get; set; }

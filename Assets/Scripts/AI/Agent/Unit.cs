@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
@@ -91,6 +90,8 @@ public class Unit : MonoBehaviour
                     minY = grid.transform.position.z - (grid.GridWorldSize.y / 2) + 4;
                     maxY = grid.transform.position.z + (grid.GridWorldSize.y / 2) - 4;
                     
+                    spotlight.color = Color.green;
+
                     target = new Vector3(Random.Range(minX, maxX), 2f, Random.Range(minY, maxY));
                     
                     StopAllCoroutines();
@@ -112,6 +113,8 @@ public class Unit : MonoBehaviour
 
                 if (playerHeard)
                 {
+                    
+                    spotlight.color = Color.yellow;
                     StopAllCoroutines();
                     
                     path = new Vector3[0];

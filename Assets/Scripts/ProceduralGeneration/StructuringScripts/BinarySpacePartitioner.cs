@@ -70,7 +70,8 @@ public class BinarySpacePartitioner
         listToReturn.Add(node);
         graph.Enqueue(node);
     }
-
+    
+    //Depending on the orientation of the line (decided in the next function) this function will return the line to divide the space for the rooms
     private Line GetLineDividingSpace(Vector2Int bottomLeftAreaCorner, Vector2Int topRightAreaCorner, int roomWidthMin, int roomLengthMin)
     {
         Orientation orientation;

@@ -51,7 +51,7 @@ public class LevelCreator : MonoBehaviour
     {
         LevelGenerator generator = new LevelGenerator(levelWidth, levelLength);
 
-        List<Node> listOfRooms = generator.CalculateLevel(
+        List<Node> listOfRooms = generator.BuildLevel(
             maxIterations, 
             roomWidthMin, 
             roomLengthMin, 
@@ -111,7 +111,7 @@ public class LevelCreator : MonoBehaviour
         {
             if (room.Parent != null)
             {
-                if (!foundStartRoom)
+                if (!foundStartRoom && room.ChildrenNodeList.Count == 0)
                 {
                     Vector3 spawnPlayerPos = new Vector3(
                         Random.Range(room.BottomLeftAreaCorner.x, room.TopRightAreaCorner.x),
@@ -121,11 +121,11 @@ public class LevelCreator : MonoBehaviour
                     player.transform.position = spawnPlayerPos;
 
                     foundStartRoom = true;
-                    
+
                     continue;
                 }
                 
-               if(!foundEndRoom)
+                if(!foundEndRoom && room.ChildrenNodeList.Count == 0)
                 {
                     Vector3 sum = new Vector3(room.BottomLeftAreaCorner.x, 2f, room.BottomLeftAreaCorner.y) 
                                   + new Vector3(room.TopRightAreaCorner.x, 2f, room.TopRightAreaCorner.y);
@@ -139,7 +139,7 @@ public class LevelCreator : MonoBehaviour
                     continue;
                 }
 
-               int randomValue = Random.Range(0, 2);
+                int randomValue = Random.Range(0, 2);
 
                 if (randomValue > 0.5f)
                 {
@@ -162,7 +162,7 @@ public class LevelCreator : MonoBehaviour
 
                         guardsIndex ++;
                     }
-                } 
+                }
             }
         }
 

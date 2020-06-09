@@ -62,6 +62,8 @@ public class CorridorNode : Node
         
         Node rightStructure = null;
         List<Node> rightStructureChildren = StructureHelper.TraverseGraphToExtractLowestLeaf(structure2);
+        
+        //We extracted all the children from the two structures before ordering the children list by the top right area for the left structure
 
         List<Node> sortedLeftStructure = leftStructureChildren.OrderByDescending(child => child.TopRightAreaCorner.x).ToList();
 
@@ -71,6 +73,7 @@ public class CorridorNode : Node
         }
         else
         {
+            // we then choose one of the children to be the left structure
             int maxX = sortedLeftStructure[0].TopRightAreaCorner.x;
             
             sortedLeftStructure = sortedLeftStructure.Where(children => Math.Abs(maxX - children.TopRightAreaCorner.x) < 10).ToList();
@@ -79,10 +82,12 @@ public class CorridorNode : Node
 
             leftStructure = sortedLeftStructure[index];
         }
-
+        
+        // Using the left structure we just found, we can search for possible neighbors for the left one in the right structure
         List<Node> rightStructurePossibleNeighbors = rightStructureChildren.Where(child =>
-            GetYForNeighbor(leftStructure.TopRightAreaCorner, leftStructure.BottomRightAreaCorner,
-                child.TopLeftAreaCorner, child.BottomLeftAreaCorner) != -1).OrderBy(child => child.BottomRightAreaCorner.x).ToList();
+            GetYForNeighbor(leftStructure.TopRightAreaCorner, leftStructure.BottomRightAreaCorner, 
+                child.TopLeftAreaCorner, child.BottomLeftAreaCorner) != -1)
+            .OrderBy(child => child.BottomRightAreaCorner.x).ToList();
 
         if (rightStructurePossibleNeighbors.Count <= 0)
         {
@@ -90,14 +95,17 @@ public class CorridorNode : Node
         }
         else
         {
+            //And we take the first one in the list
             rightStructure = rightStructurePossibleNeighbors[0];
         }
-
+        
+        //Y will give us where the corridor has to be placed on the Z-Axis on the side of the structure
         int y = GetYForNeighbor(leftStructure.TopLeftAreaCorner, leftStructure.BottomRightAreaCorner,
             rightStructure.TopLeftAreaCorner, rightStructure.BottomLeftAreaCorner);
 
         while (y == checkValue && sortedLeftStructure.Count > 1)
         {
+            //we pass through the sorted structure to see which one is the best candidate for the second end of the corridor
             sortedLeftStructure = sortedLeftStructure.Where(child => child.TopLeftAreaCorner.y != leftStructure.TopLeftAreaCorner.y).ToList();
 
             leftStructure = sortedLeftStructure[0];
@@ -109,7 +117,8 @@ public class CorridorNode : Node
         BottomLeftAreaCorner = new Vector2Int(leftStructure.BottomRightAreaCorner.x, y);
         TopRightAreaCorner = new Vector2Int(rightStructure.TopLeftAreaCorner.x, y + this.corridorWidth);
     }
-
+    
+    //This function gives us a Y depending on the node position to the other
     private int GetYForNeighbor(Vector2Int leftNodeUp, Vector2Int leftNodeDown, Vector2Int rightNodeUp, Vector2Int rightNodeDown)
     {
         if (rightNodeUp.y >= leftNodeUp.y && leftNodeDown.y >= rightNodeDown.y)
@@ -138,7 +147,8 @@ public class CorridorNode : Node
 
         return checkValue;
     }
-
+    
+    //This is the same idea as the left/right function just above, but on the X-Axis
     private void ProcessRoomRelationUpOrDown(Node structure1, Node structure2)
     {
         Node bottomStructure = null;

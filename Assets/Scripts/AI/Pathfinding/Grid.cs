@@ -117,19 +117,4 @@ public class Grid : MonoBehaviour
 
         return grid[x, y];
     }
-
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x, 1, gridWorldSize.y));
-
-        if (grid != null)
-        {
-            foreach (PathfindingNode node in grid)
-            {
-                Gizmos.color = (node.Walkable) ? Color.white : Color.red;
-
-                Gizmos.DrawCube(node.WorldPosition, Vector3.one * (nodeDiameter - 0.1f));
-            }
-        }
-    }
 }

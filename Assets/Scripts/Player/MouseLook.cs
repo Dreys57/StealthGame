@@ -10,12 +10,6 @@ public class MouseLook : MonoBehaviour
 
     private float xRotation = 0f;
     
-    
-    void Start()
-    {
-        
-    }
-    
     void Update()  
     {
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;

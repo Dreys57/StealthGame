@@ -9,21 +9,24 @@
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="AI" t="Include">
-            <e p="Grid.cs" t="Include" />
-            <e p="GuardStateMachine.cs" t="Include" />
-            <e p="Heap.cs" t="Include" />
-            <e p="Pathfinding.cs" t="Include" />
-            <e p="PathfindingNode.cs" t="Include" />
-            <e p="PathRequestManager.cs" t="Include" />
-            <e p="Unit.cs" t="Include" />
+            <e p="Agent" t="Include">
+              <e p="Unit.cs" t="Include" />
+            </e>
+            <e p="Pathfinding" t="Include">
+              <e p="Grid.cs" t="Include" />
+              <e p="Heap.cs" t="Include" />
+              <e p="Pathfinding.cs" t="Include" />
+              <e p="PathfindingNode.cs" t="Include" />
+              <e p="PathRequestManager.cs" t="Include" />
+            </e>
           </e>
-          <e p="Guard.cs" t="Include" />
           <e p="Menus" t="Include">
             <e p="MenuManager.cs" t="Include" />
           </e>
           <e p="Player" t="Include">
             <e p="MouseLook.cs" t="Include" />
             <e p="PlayerMovement.cs" t="Include" />
+            <e p="SimpleCameraController.cs" t="Include" />
           </e>
           <e p="ProceduralGeneration" t="Include">
             <e p="Generators" t="Include">
@@ -41,7 +44,6 @@
               <e p="StructureHelper.cs" t="Include" />
             </e>
           </e>
-          <e p="SimpleCameraController.cs" t="Include" />
         </e>
         <e p="TextMesh Pro" t="Include">
           <e p="Fonts" t="Include">
